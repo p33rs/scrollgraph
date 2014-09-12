@@ -1,0 +1,27 @@
+{
+  "name": "scrollgraph",
+  "version": "0.0.0",
+  "description": "capacity infinite-scroll bandwidth graph",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/p33rs/scrollgraph.git"
+  },
+  "author": "p33rs",
+  "license": "CC-BY-4.0",
+  "bugs": {
+    "url": "https://github.com/p33rs/scrollgraph/issues"
+  },
+  "devDependencies" : {
+      "grunt": "^0.4.5",
+      "grunt-cli": "^0.1.13",
+      "grunt-contrib-clean": "^0.5.0",
+      "grunt-contrib-compress": "^0.9.1",
+      "grunt-contrib-concat": "^0.4.0",
+      "grunt-contrib-uglify": "^0.4.0",
+      "grunt-contrib-watch": "^0.6.1"
+  }
+}
