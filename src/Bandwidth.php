@@ -1,5 +1,5 @@
 <?php
-namespace Capacity\Graph;
+namespace Scrollgraph;
 
 /**
  * Generates the bandwidth information.

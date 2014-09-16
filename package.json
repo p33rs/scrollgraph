@@ -3,15 +3,12 @@
   "version": "0.0.0",
   "description": "capacity infinite-scroll bandwidth graph",
   "main": "index.php",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/p33rs/scrollgraph.git"
   },
   "author": "p33rs",
-  "license": "CC-BY-4.0",
+  "license": "CC-BY-SA-4.0",
   "bugs": {
     "url": "https://github.com/p33rs/scrollgraph/issues"
   },

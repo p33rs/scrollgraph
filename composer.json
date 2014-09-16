@@ -1,0 +1,24 @@
+{
+    "name": "capacity/scrollgraph",
+    "type": "project",
+    "description": "[c] Scrolling Bandwidth Graph",
+    "homepage": "http://wearecapacity.com",
+    "license": "CC-BY-SA-4.0",
+    "authors": [
+        {
+            "name": "Jon Pierce",
+            "email": "hello@jonpierce.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "mbostock/d3": ">=3.4.11",
+        "components/jquery": "dev-master"
+    },
+    "config" : {
+        "component-dir": "vendor"
+    },
+    "autoload": {
+        "psr-4": { "Scrollgraph\\": "src/" }
+    }
+}
