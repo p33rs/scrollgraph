@@ -3,3 +3,4 @@ node_modules
 **/.*
 !.gitignore
 bower_components
+public/js/*
