@@ -8,17 +8,19 @@ function Scrollgraph(left, right, time) {
     if (!time || !(time instanceof Timescale)) {
         throw new TypeError('expected timescale');
     }
-    this.left = left;
-    this.right = right;
+    this.left = left.on('load', this.finishLeft, this);
+    this.right = right.on('load', this.finishRight, this);
     this.time = time;
     this.hasInit = false;
-    this.fetching = false;
     this.const = {
         scrollPad: 50,
         step: 1800,
+        interval: 18000,
         waiting: $('<div />').addClass('waiting').text('loading ...')
     }
 };
+
+
 
 Scrollgraph.prototype.init = function() {
     if (this.hasInit) {
@@ -29,8 +31,42 @@ Scrollgraph.prototype.init = function() {
     return this;
 };
 
+
+
+Scrollgraph.prototype.fetch = function() {
+    if (this.fetchingLeft || this.fetchingRight) {
+        return;
+    }
+    this.fetchingLeft = true;
+    this.fetchingRight = true;
+    this.left.fetch(this.const.step, this.const.interval);
+    this.right.fetch(this.const.step, this.const.interval);
+    /** @todo SPIN */
+};
+
+Scrollgraph.prototype.finishLeft = function() {
+    this.fetchingLeft = false;
+    return this.finish();
+};
+Scrollgraph.prototype.finishRight = function() {
+    this.fetchingRight = false;
+    return this.finish();
+};
+Scrollgraph.prototype.finish = function() {
+    if (this.fetchingLeft || this.fetchingRight) {
+        return this;
+    }
+    this.redraw();
+};
+
+Scrollgraph.prototype.redraw = function() {
+
+};
+
+
+
 Scrollgraph.prototype.scroll = function() {
-    if (!this.fetching) {
+    if (!this.fetchingLeft && !this.fetchingRight) {
         // are we at the bottom?
         var bottom = document.getElementsByTagName('body')[0].scrollHeight;
         var currently = window.scrollY + window.innerHeight;
@@ -39,14 +75,6 @@ Scrollgraph.prototype.scroll = function() {
         }
     }
 };
-
-Scrollgraph.prototype.fetch = function() {
-    if (this.fetching) {
-        return;
-    }
-    
-};
-
 Scrollgraph.prototype.resize = function() {
     if (this.resizeTimer) {
         window.clearTimeout(this.resizeTimer);
