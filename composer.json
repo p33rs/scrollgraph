@@ -1,7 +1,7 @@
 {
     "name": "capacity/scrollgraph",
     "type": "project",
-    "description": "[c] Scrolling Bandwidth Graph",
+    "description": "capacity infinite-scroll bandwidth graph",
     "homepage": "http://wearecapacity.com",
     "license": "GPL-3.0",
     "authors": [
@@ -11,14 +11,12 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "mbostock/d3": ">=3.4.11",
-        "components/jquery": "dev-master"
+        "php": ">=5.4.0"
     },
     "config" : {
         "component-dir": "vendor"
     },
     "autoload": {
-        "psr-4": { "Scrollgraph\\": "src/" }
+        "psr-4": { "Capacity\\Scrollgraph\\": "src/" }
     }
 }

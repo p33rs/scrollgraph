@@ -1,0 +1,21 @@
+{
+  "name": "capacity/scrollgraph",
+  "version": "0.0.0",
+  "homepage": "http://wearecapacity.com",
+  "authors": [
+    "p33rs <jon@peers.pw>"
+  ],
+  "description": "capacity infinite-scroll bandwidth graph",
+  "main": "index.php",
+  "dependencies": {
+    "d3": "git://github.com/mbostock/d3.git",
+    "jquery": "git://github.com/jquery/jquery.git",
+    "events": "git://github.com/p33rs/events.git"
+  },
+  "ignore": [
+    "vendor/**/*",
+    "node_modules",
+    "**/.*",
+    "!.gitignore"
+  ]
+}

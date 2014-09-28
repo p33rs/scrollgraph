@@ -7,7 +7,11 @@ module.exports = function(grunt) {
                 separator: ';'
             },
             vendor: {
-                src: ['vendor/components/jquery/jquery.min.js', 'vendor/mbostock/d3/d3.min.js'],
+                src: [
+                    'bower_components/jquery/dist/jquery.min.js',
+                    'bower_components/d3/d3.min.js',
+                    'bower_components/events/src/*.js'
+                ],
                 dest: 'public/js/vendor.js'
             },
             dist: {
