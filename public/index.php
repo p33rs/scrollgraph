@@ -8,7 +8,8 @@
     <link href="http://fonts.googleapis.com/css?family=Lato:100,300,700,900" rel="stylesheet" type="text/css">
     <link href="css/style.css" rel="stylesheet" type="text/css">
 
-    <script src="js/scrollgraph.min.js" type="text/javascript"></script>
+    <script src="js/scrollgraph.js" type="text/javascript"></script>
+    <script src="js/vendor.js" type="text/javascript"></script>
 
     <title>[c]</title>
 
@@ -19,7 +20,17 @@
         <div class="logo-c">C</div>
     </a>
 
-    <svg class="scrollgraph"></svg>
+    <svg class="scrollgraph">
+        <g id="time"></g>
+        <g id="left">
+            <g class="axis_x"></g>
+            <g class="graph"></g>
+        </g>
+        <g id="right">
+            <g class="axis_x"></g>
+            <g class="graph"></g>
+        </g>
+    </svg>
 
 <?php //  unstepped tooltips: http://fiddle.jshell.net/c2mru/8/ ?>
 </body>
