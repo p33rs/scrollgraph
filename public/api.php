@@ -1,7 +1,7 @@
 <?php
 // it's an API LOL
 namespace Scrollgraph;
-include('vendor/autoload.php');
+include('../vendor/autoload.php');
 $response = new Response();
 try {
     if (!array_key_exists('start', $_GET)) {

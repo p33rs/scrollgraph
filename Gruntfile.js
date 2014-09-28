@@ -8,11 +8,11 @@ module.exports = function(grunt) {
             },
             vendor: {
                 src: ['vendor/components/jquery/jquery.min.js', 'vendor/mbostock/d3/d3.min.js'],
-                dest: 'js/dist/vendor.js'
+                dest: 'public/js/vendor.js'
             },
             dist: {
-                src: 'js/src/**/*.js',
-                dest: 'js/dist/<%= pkg.name %>.js'
+                src: 'js/**/*.js',
+                dest: 'public/js/scrollgraph.js'
             }
         },
         uglify: {

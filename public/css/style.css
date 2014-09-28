@@ -1,0 +1,38 @@
+body, html {
+    font-family: Lato, sans-serif;
+    font-weight: 300;
+    color: #000000;
+    background-color: #ffffff;
+    padding: 0;
+    margin: 0;
+}
+
+.logo {
+    color: #000000;
+    font-weight: 900;
+    text-decoration: none;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+    transform: rotate(45deg);
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 12px;
+    margin-left: -40px;
+    position: fixed;
+    left: 50%;
+    top: 40px;
+}
+.logo-c {
+    transform: rotate(-45deg);
+    font-size: 50px;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+}
+
+.scrollgraph {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
