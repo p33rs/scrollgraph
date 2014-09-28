@@ -1,5 +1,5 @@
 <?php
-namespace Scrollgraph;
+namespace Capacity\Scrollgraph;
 use \InvalidArgumentException;
 use \RangeException;
 /**

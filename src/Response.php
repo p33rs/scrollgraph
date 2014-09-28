@@ -1,5 +1,5 @@
 <?php
-namespace Scrollgraph;
+namespace Capacity\Scrollgraph;
 use \ArrayAccess;
 class Response implements ArrayAccess {
     /** @var array */
