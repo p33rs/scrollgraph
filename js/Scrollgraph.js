@@ -1,4 +1,4 @@
-function Scrollgraph(left, right, time) {
+function Scrollgraph(left, right, time, options) {
     if (!left || !(left instanceof Graph)) {
         throw new TypeError('expected left graph');
     }
@@ -8,24 +8,65 @@ function Scrollgraph(left, right, time) {
     if (!time || !(time instanceof Timescale)) {
         throw new TypeError('expected timescale');
     }
+    this.opts = this.defaultOptions;
+    if (options) {
+        this.options(options);
+    }
     this.left = left.on('load', this.finishLeft, this);
     this.right = right.on('load', this.finishRight, this);
     this.time = time;
     this.hasInit = false;
-    this.const = {
-        scrollPad: 50,
-        step: 1800,
-        interval: 18000,
-        waiting: $('<div />').addClass('waiting').text('loading ...')
-    }
+
 };
+
+
+
+Scrollgraph.prototype.defaultOptions = {
+    dataDistance: 10,
+    scrollPad: 50,
+    step: 300, // every 5m
+    interval: 21600, // load 6h (72*10=720px) at a time
+    waiting: $('<div />').addClass('waiting').text('loading ...')
+};
+Scrollgraph.prototype.options = function(options, option) {
+    if (typeof options === 'undefined') {
+        return this.opts;
+    }
+    var newOptions = this.opts;
+    if (typeof option === 'undefined' && typeof options === 'object') {
+        $.extend(newOptions, options);
+    } else if (typeof option !== 'undefined') {
+        var v = {};
+        v[options] = option;
+        $.extend(newOptions, v);
+    } else {
+        throw TypeError('unexpected configuration');
+    }
+    if (this.validateOptions(newOptions)) {
+        this.opts = newOptions;
+    } else {
+        console.log(newOptions);
+        throw Error('invalid parameter');
+    }
+    return this;
+};
+Scrollgraph.prototype.validateOptions = function(options) {
+    return (
+        options &&
+            (typeof options.dataDistance === 'number' && options.dataDistance > 0 ) &&
+            (typeof options.scrollPad === 'number' && options.scrollPad > 0 ) &&
+            (typeof options.step === 'number' && options.step > 0 ) &&
+            (typeof options.interval === 'number' && options.interval > 0 ) &&
+            options.waiting
+    );
+}
 
 
 
 Scrollgraph.prototype.init = function() {
     if (this.hasInit) {
-        window.addEventListener('resize', this.resize.bind(this));
         window.addEventListener('scroll', this.scroll.bind(this));
+        window.addEventListener('resize', this.scroll.bind(this));
         this.hasInit = true;
     }
     return this;
@@ -39,8 +80,12 @@ Scrollgraph.prototype.fetch = function() {
     }
     this.fetchingLeft = true;
     this.fetchingRight = true;
-    this.left.fetch(this.const.step, this.const.interval);
-    this.right.fetch(this.const.step, this.const.interval);
+    // If we're already scrolled to top, fetch enough to fill the screen
+    var interval = this.left.height < window.innerHeight || this.right.height < window.innerHeight
+        ? this.opts.interval
+        : (window.innerHeight + this.opts.scrollPad) / this.opts.dataDistance * this.opts.step;
+    this.left.fetch(this.opts.step, interval);
+    this.right.fetch(this.opts.step, interval);
     /** @todo SPIN */
 };
 
@@ -56,11 +101,15 @@ Scrollgraph.prototype.finish = function() {
     if (this.fetchingLeft || this.fetchingRight) {
         return this;
     }
+    /** @todo UNSPIN */
     this.redraw();
+    // Check again, in case the window sized up during the fetch.
+    this.scroll();
 };
 
 Scrollgraph.prototype.redraw = function() {
-
+    this.left.redraw();
+    this.right.redraw();
 };
 
 
@@ -70,21 +119,8 @@ Scrollgraph.prototype.scroll = function() {
         // are we at the bottom?
         var bottom = document.getElementsByTagName('body')[0].scrollHeight;
         var currently = window.scrollY + window.innerHeight;
-        if (bottom - currently < this.const.scrollPad) {
+        if (bottom - currently < this.opts.scrollPad) {
             this.fetch();
         }
     }
-};
-Scrollgraph.prototype.resize = function() {
-    if (this.resizeTimer) {
-        window.clearTimeout(this.resizeTimer);
-    }
-    var self = this;
-    this.resizeTimer = window.setTimeout(function() {
-        var total = window.innerWidth;
-        var time = parseInt(this.time.element.style('width').replace('px', ''), 10);
-        var width = .5 * total - .5 * time;
-        self.left.element.transition().attr('width', width);
-        self.right.element.transition().attr('width', width);
-    }, 500);
 };

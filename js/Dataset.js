@@ -41,17 +41,16 @@ Dataset.prototype.addDatum = function(datum) {
     if (this.start === null || newDatum.time.getTime() < this.start.getTime()) {
         this.start = newDatum.time;
     }
-    // insert at correct position, working backwards
+    // insert at correct position. optimize for our backwards timescale.
     var added = false;
-    for (var i = this.data.length - 1; i >= 0; i--) {
-        if (this.data[i].time.getTime() < newDatum.time.getTime()) {
-            this.data.splice(i + 1, 0, newDatum);
-            added = true;
-            break;
+    // from first to last
+    for (var i = 0; i < this.data.length; i++) {
+        if (newDatum.time.getTime() < this.data[i].time.getTime) {
+            this.data.splice(i, 0, newDatum);
         }
     }
     if (!added) {
-        this.data.unshift(newDatum);
+        this.data.push(newDatum);
     }
     return this;
 };

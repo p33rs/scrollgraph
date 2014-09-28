@@ -1,1 +1,4 @@
-wut
+# Scrollgraph
+
+## TODO
+- Stop using jQuery.

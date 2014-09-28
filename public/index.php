@@ -8,8 +8,8 @@
     <link href="http://fonts.googleapis.com/css?family=Lato:100,300,700,900" rel="stylesheet" type="text/css">
     <link href="css/style.css" rel="stylesheet" type="text/css">
 
-    <script src="js/scrollgraph.js" type="text/javascript"></script>
     <script src="js/vendor.js" type="text/javascript"></script>
+    <script src="js/scrollgraph.js" type="text/javascript"></script>
 
     <title>[c]</title>
 
@@ -31,6 +31,8 @@
             <g class="graph"></g>
         </g>
     </svg>
+
+    <script src="js/main.js" type="text/javascript"></script>
 
 <?php //  unstepped tooltips: http://fiddle.jshell.net/c2mru/8/ ?>
 </body>
