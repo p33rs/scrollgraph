@@ -16,7 +16,7 @@ Dataset.prototype.addData = function(data) {
     return this;
 };
 Dataset.prototype.addDatum = function(datum) {
-    if (typeof datum !== object) {
+    if (typeof datum !== 'object') {
         throw new TypeError('expected datum object')
     }
     if (!datum.data && datum.data !== 0) {

@@ -26,7 +26,7 @@ BandwidthFetcher.prototype.fetch = function(start, end, step) {
                 this.trigger('load', null);
                 return;
             }
-            this.trigger('load', data.data);
+            this.trigger('load', data.data.datapoints);
         }.bind(this)
     });
 };

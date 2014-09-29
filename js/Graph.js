@@ -9,8 +9,8 @@
 function Graph(element, dataset, fetcher, yDist) {
     if (!element || !(element instanceof d3.selection)) {
         throw new TypeError('expected d3 selection');
-    } else if (element.length !== 1) {
-        throw new RangeError('expected one selection, received ' + element.length.toString());
+    } else if (element.empty()) {
+        throw new RangeError('expected one selection');
     }
     if (!dataset || !(dataset instanceof Dataset)) {
         throw new TypeError('expected dataset');
@@ -27,7 +27,7 @@ function Graph(element, dataset, fetcher, yDist) {
     this.xAxis = d3.svg.axis().scale(this.xScale).orient('top');
     this.area = d3.svg.area()
         .y(function(d) {
-            return (d.date);
+            return (d.time);
         }.bind(this))
         .x0(0)
         .x1(function(d) {
@@ -39,7 +39,15 @@ function Graph(element, dataset, fetcher, yDist) {
 }
 
 Graph.prototype.redraw = function() {
-
+    var path = this.element.select('.path');
+    if (path.empty()) {
+        console.log('s');
+        path = this.element
+            .select('.graph')
+            .append('path').attr('class', 'path');
+    }
+    console.log(path);
+    path.datum(this.dataset.getData()).attr('d', this.area);
 };
 
 Graph.prototype.onLoad = function(data) {

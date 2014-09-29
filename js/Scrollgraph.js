@@ -106,6 +106,7 @@ Scrollgraph.prototype.finish = function() {
     }
     /** @todo UNSPIN */
     this.redraw();
+    //todo scroll. be careful, leads to an infinite loop
 };
 
 Scrollgraph.prototype.redraw = function() {
@@ -133,7 +134,6 @@ Scrollgraph.prototype.resize = function() {
     var self = this;
     this.resizeTimer = window.setTimeout(function() {
         var total = window.innerWidth;
-        console.log(this.time);
         var time = this.time.element.node().getBBox().width;
         var width = .5 * total - .5 * time;
         self.left.element.transition().attr('width', width);
