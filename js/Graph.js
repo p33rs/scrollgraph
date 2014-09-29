@@ -21,13 +21,14 @@ function Graph(element, dataset, fetcher, yDist) {
     this.element = element;
     this.dataset = dataset;
     this.fetcher = fetcher.on('load', this.onLoad, this);
+    this.yDist = yDist;
 
-    // no y scale. it's additive.
     this.xScale = d3.scale.linear();
     this.xAxis = d3.svg.axis().scale(this.xScale).orient('top');
+    this.yScale = d3.time.scale();
     this.area = d3.svg.area()
         .y(function(d) {
-            return (d.time);
+            return this.yScale(d.time);
         }.bind(this))
         .x0(0)
         .x1(function(d) {
@@ -39,14 +40,19 @@ function Graph(element, dataset, fetcher, yDist) {
 }
 
 Graph.prototype.redraw = function() {
+    this.xScale.domain([this.dataset.min ? this.dataset.min : 0, this.dataset.max ? this.dataset.max : 0])
+    this.yScale
+        .domain([this.dataset.start ? this.dataset.start : 0, this.dataset.end ? this.dataset.end : 0])
+        .range([0, this.dataset.count() * this.yDist]);
     var path = this.element.select('.path');
     if (path.empty()) {
-        console.log('s');
         path = this.element
             .select('.graph')
             .append('path').attr('class', 'path');
     }
-    console.log(path);
+    console.log(this.xScale.domain(), this.xScale.range());
+    console.log(this.yScale.domain(), this.yScale.range());
+    console.log('-------------------------------');
     path.datum(this.dataset.getData()).attr('d', this.area);
 };
 
@@ -73,9 +79,15 @@ Graph.prototype.fetch = function(step, interval) {
         throw new TypeError('expected numeric interval');
     }
     var end = this.dataset.start
-        ? Math.floor(this.dataset.start.getTime()/1000) - interval
+        ? Math.floor(this.dataset.start.getTime()/1000) - step
         : Math.floor(new Date().getTime()/1000);
     var start = end - interval;
     this.fetcher.fetch(start, end, step);
 };
 
+Graph.prototype.width = function() {
+    return this.element.node().getBBox().width;
+};
+Graph.prototype.height = function() {
+    return this.element.node().getBBox().height;
+};

@@ -70,6 +70,7 @@ Scrollgraph.prototype.init = function() {
         window.addEventListener('scroll', this.scroll.bind(this));
         window.addEventListener('resize', this.scroll.bind(this));
         this.hasInit = true;
+        this.updateRanges();
         this.fetch();
     }
     return this;
@@ -131,12 +132,16 @@ Scrollgraph.prototype.resize = function() {
     if (this.resizeTimer) {
         window.clearTimeout(this.resizeTimer);
     }
-    var self = this;
     this.resizeTimer = window.setTimeout(function() {
-        var total = window.innerWidth;
-        var time = this.time.element.node().getBBox().width;
-        var width = .5 * total - .5 * time;
-        self.left.element.transition().attr('width', width);
-        self.right.element.transition().attr('width', width);
-    }, 500);
+        this.updateRanges();
+    }.bind(this), 500);
 };
+
+Scrollgraph.prototype.updateRanges = function() {
+    var total = window.innerWidth;
+    var time = this.time.width();
+    var width = .5 * total - .5 * time;
+    left.xScale.range([0, width]);
+    right.xScale.range([0, width]);
+    return this;
+}

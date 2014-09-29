@@ -21,7 +21,7 @@
     </a>
 
     <svg class="scrollgraph">
-        <g id="time"></g>
+        <g id="time" width="100"></g>
         <g id="left">
             <g class="axis_x"></g>
             <g class="graph"></g>
