@@ -1,4 +1,7 @@
-function Scrollgraph(left, right, time, options) {
+function Scrollgraph(element, left, right, time, options) {
+    if (!element || !(element instanceof d3.selection)) {
+        throw new TypeError('expected element');
+    }
     if (!left || !(left instanceof Graph)) {
         throw new TypeError('expected left graph');
     }
@@ -12,8 +15,13 @@ function Scrollgraph(left, right, time, options) {
     if (options) {
         this.options(options);
     }
-    this.left = left.on('load', this.finishLeft, this);
-    this.right = right.on('load', this.finishRight, this);
+    this.element = element;
+    this.left = left
+        .on('load', this.finishLeft, this)
+        .on('redraw', this.fitContents, this);
+    this.right = right
+        .on('load', this.finishRight, this)
+        .on('redraw', this.fitContents, this);
     this.time = time;
     this.hasInit = false;
 
@@ -137,11 +145,17 @@ Scrollgraph.prototype.resize = function() {
     }.bind(this), 500);
 };
 
+Scrollgraph.prototype.fitContents = function(graph) {
+    this.element.attr('height', graph.height());
+};
+
 Scrollgraph.prototype.updateRanges = function() {
     var total = window.innerWidth;
     var time = this.time.width();
-    var width = .5 * total - .5 * time;
+    var width = total / 2 - time / 2;
+    var rightPad = total - width;
     left.xScale.range([0, width]);
     right.xScale.range([0, width]);
+    right.element.attr('transform', 'translate('+rightPad.toString()+', 0)');
     return this;
 }

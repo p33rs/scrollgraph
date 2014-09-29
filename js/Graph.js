@@ -54,6 +54,7 @@ Graph.prototype.redraw = function() {
     console.log(this.yScale.domain(), this.yScale.range());
     console.log('-------------------------------');
     path.datum(this.dataset.getData()).attr('d', this.area);
+    this.trigger('redraw', this);
 };
 
 Graph.prototype.onLoad = function(data) {
