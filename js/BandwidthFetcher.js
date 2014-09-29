@@ -20,13 +20,13 @@ BandwidthFetcher.prototype.fetch = function(start, end, step) {
         url: this.url,
         error: function() {
             this.trigger('load', null);
-        },
+        }.bind(this),
         success: function(data) {
             if (!data || !data.status) {
                 this.trigger('load', null);
                 return;
             }
             this.trigger('load', data.data);
-        }
+        }.bind(this)
     });
 };

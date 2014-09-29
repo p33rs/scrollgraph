@@ -1,6 +1,6 @@
 <?php
 // it's an API LOL
-namespace Scrollgraph;
+namespace Capacity\Scrollgraph;
 include('../vendor/autoload.php');
 $response = new Response();
 try {

@@ -17,6 +17,9 @@ function Scrollgraph(left, right, time, options) {
     this.time = time;
     this.hasInit = false;
 
+    this.resizeTimer = null;
+    window.addEventListener('resize', this.resize.bind(this));
+
 };
 
 
@@ -45,7 +48,6 @@ Scrollgraph.prototype.options = function(options, option) {
     if (this.validateOptions(newOptions)) {
         this.opts = newOptions;
     } else {
-        console.log(newOptions);
         throw Error('invalid parameter');
     }
     return this;
@@ -64,10 +66,11 @@ Scrollgraph.prototype.validateOptions = function(options) {
 
 
 Scrollgraph.prototype.init = function() {
-    if (this.hasInit) {
+    if (!this.hasInit) {
         window.addEventListener('scroll', this.scroll.bind(this));
         window.addEventListener('resize', this.scroll.bind(this));
         this.hasInit = true;
+        this.fetch();
     }
     return this;
 };
@@ -103,8 +106,6 @@ Scrollgraph.prototype.finish = function() {
     }
     /** @todo UNSPIN */
     this.redraw();
-    // Check again, in case the window sized up during the fetch.
-    this.scroll();
 };
 
 Scrollgraph.prototype.redraw = function() {
@@ -123,4 +124,19 @@ Scrollgraph.prototype.scroll = function() {
             this.fetch();
         }
     }
+};
+
+Scrollgraph.prototype.resize = function() {
+    if (this.resizeTimer) {
+        window.clearTimeout(this.resizeTimer);
+    }
+    var self = this;
+    this.resizeTimer = window.setTimeout(function() {
+        var total = window.innerWidth;
+        console.log(this.time);
+        var time = this.time.element.node().getBBox().width;
+        var width = .5 * total - .5 * time;
+        self.left.element.transition().attr('width', width);
+        self.right.element.transition().attr('width', width);
+    }, 500);
 };
