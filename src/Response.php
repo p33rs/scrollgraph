@@ -80,6 +80,6 @@ class Response implements ArrayAccess {
     }
 
     public function isSuccess() {
-        return !!$this->error;
+        return !$this->error;
     }
 } 
