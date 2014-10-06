@@ -1,27 +1,27 @@
 /**
- * Height changes on redraw.
- * Width changes on resize triggered by scrollgraph.
- * @param element
- * @param dataset
- * @param fetcher
+ * Creates a <g> containing an area graph representing the given dataset.
+ * Handles its own data retrieval, and, as a result, scale domains.
+ * Scale ranges (essentially, output height, width) are settable.
+ * Is unaware of positioning and should be able to work independently of other Scrollgraph objects.
+ * @param {d3.selection} element A d3 <g> selection
+ * @param {Bandwidth} bandwidth a data set
  * @constructor
  */
-function Graph(element, dataset, fetcher, yDist) {
+function Graph(element, bandwidth) {
+    Observable(this);
     if (!element || !(element instanceof d3.selection)) {
         throw new TypeError('expected d3 selection');
     } else if (element.empty()) {
         throw new RangeError('expected one selection');
     }
-    if (!dataset || !(dataset instanceof Dataset)) {
-        throw new TypeError('expected dataset');
+    if (!bandwidth || !(bandwidth instanceof Bandwidth)) {
+        throw new TypeError('expected bandwidth');
     }
-    if (!fetcher || !(fetcher instanceof BandwidthFetcher)) {
-        throw new TypeError('expected fetcher');
-    }
-    this.element = element;
-    this.dataset = dataset;
-    this.fetcher = fetcher.on('load', this.onLoad, this);
-    this.yDist = yDist;
+    // pass the "load" event straight up. this preserves its data.
+    this.dataset = bandwidth.on('load', this.trigger.bind(null, 'load'), this);
+
+    this.element.append('g').classed('axis_x', true);
+    this.element.append('g').classed('graph', true);
 
     this.xScale = d3.scale.linear();
     this.xAxis = d3.svg.axis().scale(this.xScale).orient('top');
@@ -34,16 +34,12 @@ function Graph(element, dataset, fetcher, yDist) {
         .x1(function(d) {
             return this.xScale(d.data);
         }.bind(this));
-
-    Observable(this);
-
 }
 
 Graph.prototype.redraw = function() {
     this.xScale.domain([this.dataset.min ? this.dataset.min : 0, this.dataset.max ? this.dataset.max : 0])
     this.yScale
-        .domain([this.dataset.start ? this.dataset.start : 0, this.dataset.end ? this.dataset.end : 0])
-        .range([0, this.dataset.count() * this.yDist]);
+        .domain([this.dataset.start ? this.dataset.start : 0, this.dataset.end ? this.dataset.end : 0]);
     var path = this.element.select('.path');
     if (path.empty()) {
         path = this.element
@@ -55,17 +51,6 @@ Graph.prototype.redraw = function() {
     console.log('-------------------------------');
     path.datum(this.dataset.getData()).attr('d', this.area);
     this.trigger('redraw', this);
-};
-
-Graph.prototype.onLoad = function(data) {
-    if (data) {
-        this.dataset.addData(data);
-    } else {
-        /** @TODO how are errors handled? */
-        alert('lol');
-    }
-    this.trigger('load', data);
-    return this;
 };
 
 /**
@@ -86,9 +71,24 @@ Graph.prototype.fetch = function(step, interval) {
     this.fetcher.fetch(start, end, step);
 };
 
-Graph.prototype.width = function() {
-    return this.element.node().getBBox().width;
+Graph.prototype.setXRange = function(min, max) {
+    if (typeof min !== 'number' || typeof max !== 'number') {
+        throw new TypeError ('expected numeric min, max');
+    }
+    if (min < 0 || max < 0 || max < min) {
+        throw new RangeError ('invalid min, max');
+    }
+    this.xScale.range([min, max]);
+    return this;
 };
-Graph.prototype.height = function() {
-    return this.element.node().getBBox().height;
+
+Graph.prototype.setYRange = function(min, max) {
+    if (typeof min !== 'number' || typeof max !== 'number') {
+        throw new TypeError ('expected numeric min, max');
+    }
+    if (min < 0 || max < 0 || max < min) {
+        throw new RangeError ('invalid min, max');
+    }
+    this.xScale.range([min, max]);
+    return this;
 };

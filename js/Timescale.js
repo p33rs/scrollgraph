@@ -1,5 +1,10 @@
 /**
- * Created by Jon on 9/28/2014.
+ * Gets a generic <g> and draws a time-based Y-Axis.
+ * Provide setRange and setDomain methods; Re-render when they're called.
+ * Is unaware of positioning and should be able to work independently of other Scrollgraph objects.
+ * setRange and setDomain should be triggered whenever the attendant graph[s] are updated.
+ * @param element
+ * @constructor
  */
 function Timescale(element) {
     this.element = element;

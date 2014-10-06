@@ -12,7 +12,7 @@ body, html {
     font-weight: 900;
     text-decoration: none;
     display: inline-block;
-    height: 60px;
+    height: 60px; // fyi 84px diagonal
     width: 60px;
     transform: rotate(45deg);
     background-color: #ffffff;

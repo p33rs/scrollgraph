@@ -22,14 +22,8 @@
 
     <svg class="scrollgraph">
         <g id="time" width="100"></g>
-        <g id="left">
-            <g class="axis_x"></g>
-            <g class="graph"></g>
-        </g>
-        <g id="right">
-            <g class="axis_x"></g>
-            <g class="graph"></g>
-        </g>
+        <g id="left"></g>
+        <g id="right"></g>
     </svg>
 
     <script src="js/main.js" type="text/javascript"></script>
