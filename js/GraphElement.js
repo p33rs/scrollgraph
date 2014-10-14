@@ -10,7 +10,8 @@ function GraphElement(element, options) {
     if (!element || !(element instanceof d3.selection)) {
         throw new TypeError('expected element');
     }
-    this.opts = this.defaultOptions;
+    Configurable(this);
+    this.options(this.defaultOptions);
     if (options) {
         this.options(options);
     }
@@ -27,27 +28,6 @@ GraphElement.prototype.defaultOptions = {
     centerWidth: 100, // space provided for the yaxis
 };
 
-GraphElement.prototype.options = function(options, option) {
-    if (typeof options === 'undefined') {
-        return this.opts;
-    }
-    var newOptions = this.opts;
-    if (typeof option === 'undefined' && typeof options === 'object') {
-        $.extend(newOptions, options);
-    } else if (typeof option !== 'undefined') {
-        var v = {};
-        v[options] = option;
-        $.extend(newOptions, v);
-    } else {
-        throw TypeError('unexpected configuration');
-    }
-    if (this.validateOptions(newOptions)) {
-        this.opts = newOptions;
-    } else {
-        throw Error('invalid parameter');
-    }
-    return this;
-};
 GraphElement.prototype.validateOptions = function(options) {
     return (
     options &&

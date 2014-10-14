@@ -33,10 +33,13 @@ function Scrollgraph(view, left, right, time, options) {
         .on('load', this.finishRight, this)
         .on('redraw', this.view.positionContents, this.view);
     this.time = time;
-    this.opts = this.defaultOptions;
+
+    Configurable(this);
+    this.options(this.defaultOptions);
     if (options) {
         this.options(options);
     }
+    
     this.fetchingLeft = false;
     this.fetchingRight = false;
     this.resizeTimer = null;
@@ -59,10 +62,14 @@ Finally, we have the Timescale. This should also know nothing about itself, exce
 should have a copy of the appropriate scales.
 The timescale floats independently of the two graphs. We don't need to define a box for it.
 So we should create an object for positioning those graphs.
+IT IS THIS ELEMENT THERE IS NO REASON TO ADD COMPLICATION
 
-That object is probably an SVG object that represents the SVG itself. It has access to each of the elements.
-When we instantiate the graphs, we provide them with their elements by pulling them out of the SVG object.
-
+okay
+so
+repositioning means we give the graphelement a new height (well, width) and we also have to
+set a new x offset.
+We'll hard-code a Timescale width in here.
+We'll also
 
  */
 
@@ -74,27 +81,7 @@ Scrollgraph.prototype.defaultOptions = {
     interval: 21600, // total timespan to retrieve with each scroll-load
     waiting: $('<div />').addClass('waiting').text('loading ...')
 };
-Scrollgraph.prototype.options = function(options, option) {
-    if (typeof options === 'undefined') {
-        return this.opts;
-    }
-    var newOptions = this.opts;
-    if (typeof option === 'undefined' && typeof options === 'object') {
-        $.extend(newOptions, options);
-    } else if (typeof option !== 'undefined') {
-        var v = {};
-        v[options] = option;
-        $.extend(newOptions, v);
-    } else {
-        throw TypeError('unexpected configuration');
-    }
-    if (this.validateOptions(newOptions)) {
-        this.opts = newOptions;
-    } else {
-        throw Error('invalid parameter');
-    }
-    return this;
-};
+
 Scrollgraph.prototype.validateOptions = function(options) {
     return (
         options &&
@@ -129,10 +116,10 @@ Scrollgraph.prototype.fetch = function() {
     this.fetchingRight = true;
     // If we're already scrolled to top, fetch enough to fill the screen
     var interval = this.left.height() < window.innerHeight || this.right.height() < window.innerHeight
-        ? this.opts.interval
-        : (window.innerHeight + this.opts.scrollPad) / this.opts.dataDistance * this.opts.step;
-    this.left.fetch(this.opts.step, interval);
-    this.right.fetch(this.opts.step, interval);
+        ? this.options('interval')
+        : (window.innerHeight + this.options('scrollPad')) / this.options('dataDistance') * this.options('step');
+    this.left.fetch(this.options('step'), interval);
+    this.right.fetch(this.options('step'), interval);
     /** @todo SPIN */
 };
 
@@ -165,7 +152,7 @@ Scrollgraph.prototype.scroll = function() {
         // are we at the bottom?
         var bottom = document.getElementsByTagName('body')[0].scrollHeight;
         var currently = window.scrollY + window.innerHeight;
-        if (bottom - currently < this.opts.scrollPad) {
+        if (bottom - currently < this.options('scrollPad')) {
             this.fetch();
         }
     }

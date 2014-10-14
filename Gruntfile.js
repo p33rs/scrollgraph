@@ -10,7 +10,8 @@ module.exports = function(grunt) {
                 src: [
                     'bower_components/jquery/dist/jquery.min.js',
                     'bower_components/d3/d3.min.js',
-                    'bower_components/events/src/*.js'
+                    'bower_components/events/src/*.js',
+                    'bower_components/configurable/Configurable.js'
                 ],
                 dest: 'public/js/vendor.js'
             },
