@@ -8,7 +8,10 @@
  */
 function Timescale(element) {
     this.element = element;
-    // has a .element.
+    this.scale = d3.time.scale();
+    this.axis = d3.svg.axis()
+        .scale(this.scale)
+        .orient(left);
 }
 
 Timescale.prototype.height = function(height, transition) {
@@ -23,4 +26,24 @@ Timescale.prototype.height = function(height, transition) {
 };
 Timescale.prototype.width = function() {
     return this.element.node().getBBox().width;
+};
+Timescale.prototype.setRange = function(min, max) {
+    if (typeof min !== 'number' || typeof max !== 'number') {
+        throw new TypeError ('expected numeric min, max');
+    }
+    if (min < 0 || max < 0 || max < min) {
+        throw new RangeError ('invalid min, max');
+    }
+    this.scale.range([min, max]);
+    return this;
+};
+Timescale.prototype.setDomain = function(min, max) {
+    if (typeof min !== 'number' || typeof max !== 'number') {
+        throw new TypeError ('expected numeric min, max');
+    }
+    if (min < 0 || max < 0 || max < min) {
+        throw new RangeError ('invalid min, max');
+    }
+    this.scale.domain([min, max]);
+    return this;
 };

@@ -17,29 +17,33 @@ function Graph(element, bandwidth) {
     if (!bandwidth || !(bandwidth instanceof Bandwidth)) {
         throw new TypeError('expected bandwidth');
     }
-    // pass the "load" event straight up. this preserves its data.
-    this.dataset = bandwidth.on('load', this.trigger.bind(null, 'load'), this);
 
-    this.element.append('g').classed('axis_x', true);
+    // pass the "load" event straight up. this preserves its data.
+    this.data = bandwidth.on('load', this.trigger.bind(null, 'load'), this);
+
+    this.element = element;
+    this.element.append('g').classed('axis_y', true);
     this.element.append('g').classed('graph', true);
 
-    this.xScale = d3.scale.linear();
-    this.xAxis = d3.svg.axis().scale(this.xScale).orient('top');
-    this.yScale = d3.time.scale();
+    this.yScale = d3.scale.linear();
+    this.yAxis = d3.svg.axis().scale(this.yScale).orient('top');
+    this.xScale = d3.time.scale();
     this.area = d3.svg.area()
-        .y(function(d) {
-            return this.yScale(d.time);
+        .x(function(d) {
+            return this.xScale(d.time);
         }.bind(this))
-        .x0(0)
-        .x1(function(d) {
-            return this.xScale(d.data);
+        .y0(0)
+        .y1(function(d) {
+            return this.yScale(d.data);
         }.bind(this));
 }
 
 Graph.prototype.redraw = function() {
-    this.xScale.domain([this.dataset.min ? this.dataset.min : 0, this.dataset.max ? this.dataset.max : 0])
+    // ranges already set externally, according to window size
     this.yScale
-        .domain([this.dataset.start ? this.dataset.start : 0, this.dataset.end ? this.dataset.end : 0]);
+        .domain([this.data.min ? this.data.min : 0, this.data.max ? this.data.max : 0])
+    this.xScale
+        .domain([this.data.start ? this.data.start : 0, this.data.end ? this.data.end : 0]);
     var path = this.element.select('.path');
     if (path.empty()) {
         path = this.element
@@ -49,7 +53,8 @@ Graph.prototype.redraw = function() {
     console.log(this.xScale.domain(), this.xScale.range());
     console.log(this.yScale.domain(), this.yScale.range());
     console.log('-------------------------------');
-    path.datum(this.dataset.getData()).attr('d', this.area);
+    // @TODO yaxis
+    path.datum(this.data.getData()).attr('d', this.area);
     this.trigger('redraw', this);
 };
 
@@ -64,11 +69,11 @@ Graph.prototype.fetch = function(step, interval) {
     if (typeof interval !== 'number') {
         throw new TypeError('expected numeric interval');
     }
-    var end = this.dataset.start
-        ? Math.floor(this.dataset.start.getTime()/1000) - step
+    var end = this.data.start
+        ? Math.floor(this.data.start.getTime()/1000) - step
         : Math.floor(new Date().getTime()/1000);
     var start = end - interval;
-    this.fetcher.fetch(start, end, step);
+    this.data.fetch(start, end, step);
 };
 
 Graph.prototype.setXRange = function(min, max) {
@@ -89,6 +94,13 @@ Graph.prototype.setYRange = function(min, max) {
     if (min < 0 || max < 0 || max < min) {
         throw new RangeError ('invalid min, max');
     }
-    this.xScale.range([min, max]);
+    this.yScale.range([min, max]);
     return this;
+};
+
+Graph.prototype.getHeight = function() {
+    return this.element.node().getBBox().height;
+};
+Graph.prototype.getWidth = function() {
+    return this.element.node().getBBox().width;
 };

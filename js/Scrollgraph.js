@@ -10,11 +10,8 @@
  * @param {Object} options
  * @constructor
  */
-function Scrollgraph(view, left, right, time, options) {
+function Scrollgraph(left, right, time, options) {
 
-    if (!view || !(view instanceof GraphElement)) {
-        throw new TypeError('expected graphelement');
-    }
     if (!left || !(left instanceof Graph)) {
         throw new TypeError('expected left graph');
     }
@@ -25,13 +22,10 @@ function Scrollgraph(view, left, right, time, options) {
         throw new TypeError('expected timescale');
     }
 
-    this.view = view;
     this.left = left
-        .on('load', this.finishLeft, this)
-        .on('redraw', this.view.positionContents, this.view);
+        .on('load', this.finishLeft, this);
     this.right = right
-        .on('load', this.finishRight, this)
-        .on('redraw', this.view.positionContents, this.view);
+        .on('load', this.finishRight, this);
     this.time = time;
 
     Configurable(this);
@@ -71,6 +65,21 @@ set a new x offset.
 We'll hard-code a Timescale width in here.
 We'll also
 
+EXECUTIVE DECISION:
+"X" is the TIME SCALE.
+"Y" is the DATA SCALE.
+As far as the GRAPH is concerned, this shit is horizontal.
+
+How are width and height managed? Well, we know the data distance here, so
+I guess the graphs /DON'T KNOW THEIR OWN HEIGHT OR WIDTH/, which also means
+the graphs /DON'T MANAGE THEIR OWN RANGES./ They simply manage their domains,
+when new data comes in.
+
+on ranges:
+on resize, we update the Y range and redraw the graph. we also reposition.
+  finally, we see if we need to refetch.
+on fetch, we update the X range and redraw the graph.
+
  */
 
 
@@ -79,7 +88,8 @@ Scrollgraph.prototype.defaultOptions = {
     scrollPad: 50, // loading from scrolling provides this much slack
     step: 300, // passed as API argument. how much time per datapoint?
     interval: 21600, // total timespan to retrieve with each scroll-load
-    waiting: $('<div />').addClass('waiting').text('loading ...')
+    waiting: $('<div />').addClass('waiting').text('loading ...'),
+    middleMargin: 100
 };
 
 Scrollgraph.prototype.validateOptions = function(options) {
@@ -89,6 +99,7 @@ Scrollgraph.prototype.validateOptions = function(options) {
             (typeof options.scrollPad === 'number' && options.scrollPad > 0 ) &&
             (typeof options.step === 'number' && options.step > 0 ) &&
             (typeof options.interval === 'number' && options.interval > 0 ) &&
+            (typeof options.middleMargin === 'number' && options.middleMargin > 0 ) &&
             options.waiting
     );
 }
@@ -99,8 +110,8 @@ Scrollgraph.prototype.init = function() {
     if (!this.hasInit) {
         window.addEventListener('scroll', this.scroll.bind(this));
         window.addEventListener('resize', this.scroll.bind(this));
+        window.addEventListener('resize', this.resize.bind(this));
         this.hasInit = true;
-        this.updateRanges();
         this.fetch();
     }
     return this;
@@ -115,7 +126,8 @@ Scrollgraph.prototype.fetch = function() {
     this.fetchingLeft = true;
     this.fetchingRight = true;
     // If we're already scrolled to top, fetch enough to fill the screen
-    var interval = this.left.height() < window.innerHeight || this.right.height() < window.innerHeight
+    console.log(this.left.getWidth(), 'a');
+    var interval = this.left.getHeight() < window.innerHeight || this.right.getHeight() < window.innerHeight
         ? this.options('interval')
         : (window.innerHeight + this.options('scrollPad')) / this.options('dataDistance') * this.options('step');
     this.left.fetch(this.options('step'), interval);
@@ -136,13 +148,16 @@ Scrollgraph.prototype.finish = function() {
         return this;
     }
     /** @todo UNSPIN */
-    this.redraw();
-    //todo scroll. be careful, leads to an infinite loop
+    this.updateXRanges().redraw();
+    // todo scroll, in case they made window bigger during fetch
+    // careful, in current implementation, leads to an infinite loop
 };
 
 Scrollgraph.prototype.redraw = function() {
     this.left.redraw();
     this.right.redraw();
+    this.reposition();
+    return this;
 };
 
 
@@ -163,15 +178,32 @@ Scrollgraph.prototype.resize = function() {
         window.clearTimeout(this.resizeTimer);
     }
     this.resizeTimer = window.setTimeout(function() {
-        this.updateRanges();
+        this.updateYRanges().redraw().scroll();
     }.bind(this), 500);
 };
 
-Scrollgraph.prototype.updateRanges = function() {
+Scrollgraph.prototype.updateYRanges = function() {
     var total = window.innerWidth;
-    var time = this.time.width();
-    var width = total / 2 - time / 2;
-    left.setRange(0, width);
-    right.setRange(0, width);
+    var width = total / 2 - this.options('middleMargin') / 2;
+    left.setYRange(0, width);
+    right.setYRange(0, width);
     return this;
-}
+};
+
+Scrollgraph.prototype.updateXRanges = function() {
+    // determine the widest timespan
+    var left = this.left.data.count();
+    var right = this.right.data.count();
+    var max =  (right > left ? right : left) * this.options('dataDistance');
+    this.left.setXRange(0, max);
+    this.right.setXRange(0, max);
+    return this;
+};
+
+Scrollgraph.prototype.reposition = function() {
+    // left: rotate -90 about top left; translate downward by <width>
+    this.left.element.attr('transform', 'rotate(90) translate(0, '+this.left.getWidth().toString()+')');
+    // right: rotate -90 about top left; scaleX -1; translate right 2(height) + middle
+    this.right.element.attr('transform', 'rotate(-90) scale(-1,0) translate('+(2*this.right.getHeight()+this.options('middleMargin')).toString()+')');
+    return this;
+};
