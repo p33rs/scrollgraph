@@ -16,9 +16,11 @@
 </head>
 <body>
 
-    <a class="logo" href="http://wearecapacity.com/">
-        <div class="logo-c">C</div>
-    </a>
+    <div class="logo">
+        <a class="logo-border" href="http://wearecapacity.com/">
+            <div class="logo-c">C</div>
+        </a>
+    </div>
 
     <svg class="scrollgraph">
         <g id="time" width="100"></g>

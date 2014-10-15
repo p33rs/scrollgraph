@@ -8,6 +8,13 @@ body, html {
 }
 
 .logo {
+    position: fixed;
+    width: 100px;
+    top: 40px;
+    left: 50%;
+    margin-left: 10px
+}
+.logo-border {
     color: #000000;
     font-weight: 900;
     text-decoration: none;
@@ -15,13 +22,11 @@ body, html {
     height: 60px; /* 84px diagonal, fyi */
     width: 60px;
     transform: rotate(45deg);
+    transform-origin: 0 0;
     background-color: #ffffff;
     border: 2px solid #000000;
     border-radius: 12px;
-    margin-left: -40px;
-    position: fixed;
-    left: 50%;
-    top: 40px;
+
 }
 .logo-c {
     transform: rotate(-45deg);

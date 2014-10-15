@@ -10,8 +10,11 @@
  * @param {Object} options
  * @constructor
  */
-function Scrollgraph(left, right, time, options) {
+function Scrollgraph(element, left, right, time, options) {
 
+    if (!element || !(element instanceof d3.selection)) {
+        throw new TypeError('expected d3 selection');
+    }
     if (!left || !(left instanceof Graph)) {
         throw new TypeError('expected left graph');
     }
@@ -22,6 +25,7 @@ function Scrollgraph(left, right, time, options) {
         throw new TypeError('expected timescale');
     }
 
+    this.element = element;
     this.left = left
         .on('load', this.finishLeft, this);
     this.right = right
@@ -41,47 +45,6 @@ function Scrollgraph(left, right, time, options) {
 
 };
 
-/*
-
-Some ramblin:
-First of all, graph positioning shouldn't be in the CSS.
-Second of all: Graph positioning is mediated by the Scrollgraph. Each graph should know nothing about its position
-or its orientation. It simply knows its width.
-So, how do we handle this? We have the added fuckup of having to deal with a right-side graph and a left-side graph.
-Drawing the leftside graph is a bit more tricky because we need to do (ScaleX -1 Transform -100%,0) on top
-of whatever else. Whose responsibility is it to know that?
-Do we need to have a third object that knows how to arrange this shit? Maybe.
-Hm.
-Finally, we have the Timescale. This should also know nothing about itself, except its width and height, and it
-should have a copy of the appropriate scales.
-The timescale floats independently of the two graphs. We don't need to define a box for it.
-So we should create an object for positioning those graphs.
-IT IS THIS ELEMENT THERE IS NO REASON TO ADD COMPLICATION
-
-okay
-so
-repositioning means we give the graphelement a new height (well, width) and we also have to
-set a new x offset.
-We'll hard-code a Timescale width in here.
-We'll also
-
-EXECUTIVE DECISION:
-"X" is the TIME SCALE.
-"Y" is the DATA SCALE.
-As far as the GRAPH is concerned, this shit is horizontal.
-
-How are width and height managed? Well, we know the data distance here, so
-I guess the graphs /DON'T KNOW THEIR OWN HEIGHT OR WIDTH/, which also means
-the graphs /DON'T MANAGE THEIR OWN RANGES./ They simply manage their domains,
-when new data comes in.
-
-on ranges:
-on resize, we update the Y range and redraw the graph. we also reposition.
-  finally, we see if we need to refetch.
-on fetch, we update the X range and redraw the graph.
-
- */
-
 
 Scrollgraph.prototype.defaultOptions = {
     dataDistance: 10, // in px, how tall is a step
@@ -89,7 +52,8 @@ Scrollgraph.prototype.defaultOptions = {
     step: 300, // passed as API argument. how much time per datapoint?
     interval: 21600, // total timespan to retrieve with each scroll-load
     waiting: $('<div />').addClass('waiting').text('loading ...'),
-    middleMargin: 100
+    middleMargin: 100,
+    topMargin: 80
 };
 
 Scrollgraph.prototype.validateOptions = function(options) {
@@ -126,7 +90,6 @@ Scrollgraph.prototype.fetch = function() {
     this.fetchingLeft = true;
     this.fetchingRight = true;
     // If we're already scrolled to top, fetch enough to fill the screen
-    console.log(this.left.getWidth(), 'a');
     var interval = this.left.getHeight() < window.innerHeight || this.right.getHeight() < window.innerHeight
         ? this.options('interval')
         : (window.innerHeight + this.options('scrollPad')) / this.options('dataDistance') * this.options('step');
@@ -148,7 +111,7 @@ Scrollgraph.prototype.finish = function() {
         return this;
     }
     /** @todo UNSPIN */
-    this.updateXRanges().redraw();
+    this.updateYRanges().updateXRanges().redraw();
     // todo scroll, in case they made window bigger during fetch
     // careful, in current implementation, leads to an infinite loop
 };
@@ -185,8 +148,8 @@ Scrollgraph.prototype.resize = function() {
 Scrollgraph.prototype.updateYRanges = function() {
     var total = window.innerWidth;
     var width = total / 2 - this.options('middleMargin') / 2;
-    left.setYRange(0, width);
-    right.setYRange(0, width);
+    this.left.setYRange(0, width);
+    this.right.setYRange(0, width);
     return this;
 };
 
@@ -195,6 +158,7 @@ Scrollgraph.prototype.updateXRanges = function() {
     var left = this.left.data.count();
     var right = this.right.data.count();
     var max =  (right > left ? right : left) * this.options('dataDistance');
+    this.element.attr('height', max);
     this.left.setXRange(0, max);
     this.right.setXRange(0, max);
     return this;
@@ -202,8 +166,8 @@ Scrollgraph.prototype.updateXRanges = function() {
 
 Scrollgraph.prototype.reposition = function() {
     // left: rotate -90 about top left; translate downward by <width>
-    this.left.element.attr('transform', 'rotate(90) translate(0, '+this.left.getWidth().toString()+')');
+    this.left.element.attr('transform', 'rotate(90 0 0) translate('+this.options('topMargin').toString()+', -'+(this.left.getHeight()).toString()+')');
     // right: rotate -90 about top left; scaleX -1; translate right 2(height) + middle
-    this.right.element.attr('transform', 'rotate(-90) scale(-1,0) translate('+(2*this.right.getHeight()+this.options('middleMargin')).toString()+')');
+    this.right.element.attr('transform', 'rotate(-90 0 0) scale(-1,1) translate('+this.options('topMargin').toString()+', '+(this.right.getHeight()+this.options('middleMargin')).toString()+')');
     return this;
 };
