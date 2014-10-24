@@ -23,9 +23,13 @@
     </div>
 
     <svg class="scrollgraph">
-        <g id="time" width="100"></g>
-        <g id="left"></g>
-        <g id="right"></g>
+        <g id="datascales">
+            <g class="datascale" id="yAxis-left"></g>
+            <g class="datascale" id="yAxis-right"></g>
+        </g>
+        <g class="timescale" id="time" width="100"></g>
+        <g class="graph" id="graph-left"></g>
+        <g class="graph" id="graph-right"></g>
     </svg>
 
     <script src="js/main.js" type="text/javascript"></script>

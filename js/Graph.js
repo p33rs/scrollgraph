@@ -7,7 +7,7 @@
  * @param {Bandwidth} bandwidth a data set
  * @constructor
  */
-function Graph(element, bandwidth) {
+function Graph(element, xScale, yScale, bandwidth) {
     Observable(this);
     if (!element || !(element instanceof d3.selection)) {
         throw new TypeError('expected d3 selection');
@@ -25,9 +25,9 @@ function Graph(element, bandwidth) {
     this.element.append('g').classed('axis_y', true);
     this.element.append('g').classed('graph', true);
 
-    this.yScale = d3.scale.linear();
+    this.yScale = yScale;
     this.yAxis = d3.svg.axis().scale(this.yScale).orient('top');
-    this.xScale = d3.time.scale();
+    this.xScale = xScale;
     this.area = d3.svg.area()
         .x(function(d) {
             return this.xScale(d.time);

@@ -6,7 +6,7 @@
  * @param element
  * @constructor
  */
-function Timescale(element) {
+function Timescale(element, scale) {
     this.element = element;
     this.scale = d3.time.scale();
     this.axis = d3.svg.axis()

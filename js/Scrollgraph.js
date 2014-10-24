@@ -10,7 +10,7 @@
  * @param {Object} options
  * @constructor
  */
-function Scrollgraph(element, left, right, time, options) {
+function Scrollgraph(element, left, right, time, data, options) {
 
     if (!element || !(element instanceof d3.selection)) {
         throw new TypeError('expected d3 selection');
@@ -31,6 +31,10 @@ function Scrollgraph(element, left, right, time, options) {
     this.right = right
         .on('load', this.finishRight, this);
     this.time = time;
+
+    // wish we could validate these
+    this.xScale = xScale;
+    this.yScale = yScale;
 
     Configurable(this);
     this.options(this.defaultOptions);
