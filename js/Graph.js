@@ -19,7 +19,9 @@ function Graph(element, xScale, yScale, bandwidth) {
     }
 
     // pass the "load" event straight up. this preserves its data.
-    this.data = bandwidth.on('load', this.trigger.bind(null, 'load'), this);
+    this.data = bandwidth
+        .on('load', this.setDomains.bind(this))
+        .on('load', this.trigger.bind(null, 'load'), this);
 
     this.element = element;
     this.element.append('g').classed('axis_y', true);
@@ -39,24 +41,62 @@ function Graph(element, xScale, yScale, bandwidth) {
 }
 
 Graph.prototype.redraw = function() {
-    // ranges already set externally, according to window size
-    this.yScale
-        .domain([this.data.min ? this.data.min : 0, this.data.max ? this.data.max : 0])
-    this.xScale
-        .domain([this.data.start ? this.data.start : 0, this.data.end ? this.data.end : 0]);
+    // ranges already set externally, according to window size.
+
     var path = this.element.select('.path');
     if (path.empty()) {
         path = this.element
             .select('.graph')
             .append('path').attr('class', 'path');
     }
-    console.log(this.xScale.domain(), this.xScale.range());
-    console.log(this.yScale.domain(), this.yScale.range());
+    console.log('x Domain:', this.xScale.domain());
+    console.log('x Range:', this.xScale.range());
+    console.log('y Domain:', this.yScale.domain());
+    console.log('y Range:', this.yScale.range());
     console.log('-------------------------------');
     // @TODO yaxis
     path.datum(this.data.getData()).attr('d', this.area);
     this.trigger('redraw', this);
 };
+
+/**
+ * Domains are only widened, never narrowed.
+ * @todo Don't do this with _isDomained. Wrap the scales in something.
+ */
+Graph.prototype.setDomains = function() {
+    var min = this.data.min ? this.data.min : 0;
+    var max = this.data.max ? this.data.max : 0;
+
+    var start = this.data.start ? this.data.start : 0;
+    var end = this.data.end ? this.data.end : 0;
+
+    if (this.yScale._isDomained) {
+        var currentY = this.yScale.domain();
+        if (currentY[0] < min) {
+            min = currentY[0];
+        }
+        if (currentY[1] > max) {
+            max = currentY[1];
+        }
+    }
+    this.yScale._isDomained = true;
+
+    if (this.xScale._isDomained) {
+        var currentX = this.xScale.domain();
+        if (currentX[0] < start) {
+            start = currentX[0];
+        }
+        if (currentX[1] > end) {
+            end = currentX[1];
+        }
+    }
+    this.xScale._isDomained = true;
+
+    this.yScale.domain([min, max]);
+    this.xScale.domain([start, end]);
+
+    return this;
+}
 
 /**
  * @param step

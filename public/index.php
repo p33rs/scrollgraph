@@ -23,10 +23,8 @@
     </div>
 
     <svg class="scrollgraph">
-        <g id="datascales">
-            <g class="datascale" id="yAxis-left"></g>
-            <g class="datascale" id="yAxis-right"></g>
-        </g>
+        <g class="datascale" id="yAxis-left"></g>
+        <g class="datascale" id="yAxis-right"></g>
         <g class="timescale" id="time" width="100"></g>
         <g class="graph" id="graph-left"></g>
         <g class="graph" id="graph-right"></g>

@@ -10,10 +10,13 @@
  * @param {Object} options
  * @constructor
  */
-function Scrollgraph(element, left, right, time, data, options) {
+function Scrollgraph(element, left, right, axes, options) {
 
     if (!element || !(element instanceof d3.selection)) {
-        throw new TypeError('expected d3 selection');
+        throw new TypeError('element: expected d3 selection');
+    }
+    if (!axes || !(axes instanceof Axes)) {
+        throw new TypeError('expected axes');
     }
     if (!left || !(left instanceof Graph)) {
         throw new TypeError('expected left graph');
@@ -21,20 +24,14 @@ function Scrollgraph(element, left, right, time, data, options) {
     if (!right || !(right instanceof Graph)) {
         throw new TypeError('expected right graph');
     }
-    if (!time || !(time instanceof Timescale)) {
-        throw new TypeError('expected timescale');
-    }
 
     this.element = element;
     this.left = left
         .on('load', this.finishLeft, this);
     this.right = right
         .on('load', this.finishRight, this);
-    this.time = time;
 
-    // wish we could validate these
-    this.xScale = xScale;
-    this.yScale = yScale;
+    this.axes = axes;
 
     Configurable(this);
     this.options(this.defaultOptions);
@@ -123,6 +120,7 @@ Scrollgraph.prototype.finish = function() {
 Scrollgraph.prototype.redraw = function() {
     this.left.redraw();
     this.right.redraw();
+    this.axes.redraw();
     this.reposition();
     return this;
 };
@@ -150,8 +148,7 @@ Scrollgraph.prototype.resize = function() {
 };
 
 Scrollgraph.prototype.updateYRanges = function() {
-    var total = window.innerWidth;
-    var width = total / 2 - this.options('middleMargin') / 2;
+    var width = (this.windowWidth() - this.options('middleMargin')) / 2;
     this.left.setYRange(0, width);
     this.right.setYRange(0, width);
     return this;
@@ -169,9 +166,22 @@ Scrollgraph.prototype.updateXRanges = function() {
 };
 
 Scrollgraph.prototype.reposition = function() {
-    // left: rotate -90 about top left; translate downward by <width>
-    this.left.element.attr('transform', 'rotate(90 0 0) translate('+this.options('topMargin').toString()+', -'+(this.left.getHeight()).toString()+')');
-    // right: rotate -90 about top left; scaleX -1; translate right 2(height) + middle
-    this.right.element.attr('transform', 'rotate(-90 0 0) scale(-1,1) translate('+this.options('topMargin').toString()+', '+(this.right.getHeight()+this.options('middleMargin')).toString()+')');
+    var top = this.options('topMargin');
+    var maxWidth = (this.windowWidth() - this.options('middleMargin')) / 2;
+    var rightOffset = this.windowWidth() - this.right.getHeight();
+
+    // left: rotate -90 about top left; translate downward
+    this.left.element.attr('transform', 'rotate(90 0 0) translate('+top.toString()+', -'+(maxWidth).toString()+')');
+    // right: rotate -90 about top left; scaleX -1; translate rightward
+    this.right.element.attr('transform', 'rotate(-90 0 0) scale(-1,1) translate('+top.toString()+', '+ rightOffset.toString()+')');
+    this.axes.setWidth(this.left.getWidth(), this.right.getWidth());
     return this;
+};
+
+/**
+ * such convenience
+ * @returns {number}
+ */
+Scrollgraph.prototype.windowWidth = function() {
+    return document.documentElement.clientWidth || document.body.clientWidth;
 };
