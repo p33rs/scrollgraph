@@ -16,8 +16,12 @@ function Axes(lAxisElement, rAxisElement, vAxisElement, xScale, yScale) {
     this.xScale = xScale;
     this.yScale = yScale;
 
-    this.xAxis = d3.svg.axis().scale(xScale);
-    this.yAxis = d3.svg.axis().scale(yScale);
+    this.xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient('right');
+    this.yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient('top');
 
 };
 
@@ -37,5 +41,22 @@ Axes.prototype.redraw = function() {
     this.yAxis(this.lAxisElement);
     this.yAxis(this.rAxisElement);
     this.xAxis(this.vAxisElement);
+    return this;
+};
+
+Axes.prototype.offsetVAxis = function(x, y) {
+    return this.offset(this.vAxisElement, x, y);
+};
+
+Axes.prototype.offsetLAxis = function(x, y) {
+    return this.offset(this.lAxisElement, x, y);
+};
+
+Axes.prototype.offsetRAxis = function(x, y) {
+    return this.offset(this.rAxisElement, x, y);
+};
+
+Axes.prototype.offset = function (axis, x, y) {
+    axis.attr('transform', 'translate('+ x.toString() + ',' + y.toString() + ')');
     return this;
 };

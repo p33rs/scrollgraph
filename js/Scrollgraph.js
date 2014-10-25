@@ -91,9 +91,12 @@ Scrollgraph.prototype.fetch = function() {
     this.fetchingLeft = true;
     this.fetchingRight = true;
     // If we're already scrolled to top, fetch enough to fill the screen
-    var interval = this.left.getHeight() < window.innerHeight || this.right.getHeight() < window.innerHeight
+    var fillScreen = this.left.getHeight() && this.right.getHeight() && (this.left.getHeight() < window.innerHeight || this.right.getHeight() < window.innerHeight)
+    var interval = fillScreen
         ? this.options('interval')
         : (window.innerHeight + this.options('scrollPad')) / this.options('dataDistance') * this.options('step');
+
+    console.log(this.left.getHeight(), window.innerHeight);
     this.left.fetch(this.options('step'), interval);
     this.right.fetch(this.options('step'), interval);
     /** @todo SPIN */
@@ -175,6 +178,10 @@ Scrollgraph.prototype.reposition = function() {
     // right: rotate -90 about top left; scaleX -1; translate rightward
     this.right.element.attr('transform', 'rotate(-90 0 0) scale(-1,1) translate('+top.toString()+', '+ rightOffset.toString()+')');
     this.axes.setWidth(this.left.getWidth(), this.right.getWidth());
+    this.axes
+        .offsetVAxis(maxWidth, top)
+        .offsetLAxis(0, top)
+        .offsetRAxis(maxWidth + this.options('middleMargin'), top)
     return this;
 };
 
