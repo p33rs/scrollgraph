@@ -18,10 +18,15 @@ function Axes(lAxisElement, rAxisElement, vAxisElement, xScale, yScale) {
 
     this.xAxis = d3.svg.axis()
         .scale(xScale)
-        .orient('right');
+        .orient('right')
+        .outerTickSize(0)
+        .tickPadding(0);
     this.yAxis = d3.svg.axis()
         .scale(yScale)
-        .orient('top');
+        .orient('top')
+        .outerTickSize(2)
+        .ticks(5)
+        .tickPadding(0);
 
 };
 
@@ -38,6 +43,9 @@ Axes.prototype.setWidth = function(left, right) {
 };
 
 Axes.prototype.redraw = function() {
+    var domain = this.xAxis.scale().domain();
+    var span = domain[1].getTime() - domain[0].getTime();
+    this.xAxis.ticks(span / 1800000)
     this.yAxis(this.lAxisElement);
     this.yAxis(this.rAxisElement);
     this.xAxis(this.vAxisElement);
