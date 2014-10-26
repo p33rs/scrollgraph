@@ -1,17 +1,15 @@
-function Axes(lAxisElement, rAxisElement, vAxisElement, xScale, yScale) {
+function Axes(hAxisElement, vAxisElement, xScale, yScale) {
 
-    if (!lAxisElement || !(lAxisElement instanceof d3.selection)) {
+    if (!hAxisElement || !(hAxisElement instanceof d3.selection)) {
         throw new TypeError('laxis: expected d3 selection');
-    }
-    if (!rAxisElement || !(rAxisElement instanceof d3.selection)) {
-        throw new TypeError('raxis: expected d3 selection');
     }
     if (!vAxisElement || !(vAxisElement instanceof d3.selection)) {
         throw new TypeError('vaxis: expected d3 selection');
     }
 
-    this.lAxisElement = lAxisElement;
-    this.rAxisElement = rAxisElement;
+    this.hAxisElement = hAxisElement;
+    this.lAxisElement = hAxisElement.select('.datascale.left');
+    this.rAxisElement = hAxisElement.select('.datascale.right');
     this.vAxisElement = vAxisElement;
     this.xScale = xScale;
     this.yScale = yScale;
@@ -51,6 +49,13 @@ Axes.prototype.redraw = function() {
     this.xAxis(this.vAxisElement);
     return this;
 };
+
+Axes.prototype.getHAxis = function() {
+    return this.hAxisElement;
+};
+Axes.prototype.getVAxis = function() {
+    return this.vAxisElement;
+}
 
 Axes.prototype.offsetVAxis = function(x, y) {
     return this.offset(this.vAxisElement, x, y);

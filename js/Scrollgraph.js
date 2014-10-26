@@ -124,7 +124,7 @@ Scrollgraph.prototype.redraw = function() {
     this.left.redraw();
     this.right.redraw();
     this.axes.redraw();
-    this.reposition();
+    this.reposition().resizeAxes();
     return this;
 };
 
@@ -148,6 +148,13 @@ Scrollgraph.prototype.resize = function() {
     this.resizeTimer = window.setTimeout(function() {
         this.updateYRanges().redraw().scroll();
     }.bind(this), 500);
+};
+
+Scrollgraph.prototype.resizeAxes = function() {
+    this.axes.getHAxis()
+        .attr('height', this.options('topMargin'))
+        .attr('width', this.windowWidth());
+    return this;
 };
 
 Scrollgraph.prototype.updateYRanges = function() {

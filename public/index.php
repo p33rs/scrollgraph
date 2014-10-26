@@ -16,19 +16,22 @@
 </head>
 <body>
 
+    <svg class="datascales">
+        <g class="datascale left"></g>
+        <g class="datascale right"></g>
+    </svg>
+
+    <svg class="scrollgraph">
+        <g class="timescale" id="time" width="100"></g>
+        <g class="graph" id="graph-left"></g>
+        <g class="graph" id="graph-right"></g>
+    </svg>
+
     <div class="logo">
         <a class="logo-border" href="http://wearecapacity.com/">
             <div class="logo-c">C</div>
         </a>
     </div>
-
-    <svg class="scrollgraph">
-        <g class="datascale" id="yAxis-left"></g>
-        <g class="datascale" id="yAxis-right"></g>
-        <g class="timescale" id="time" width="100"></g>
-        <g class="graph" id="graph-left"></g>
-        <g class="graph" id="graph-right"></g>
-    </svg>
 
     <script src="js/main.js" type="text/javascript"></script>
 
