@@ -144,3 +144,7 @@ Graph.prototype.getHeight = function() {
 Graph.prototype.getWidth = function() {
     return this.element.node().getBBox().width;
 };
+
+Graph.prototype.getArea = function() {
+    return this.element.select('.graph .path');
+}

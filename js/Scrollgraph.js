@@ -44,6 +44,10 @@ function Scrollgraph(element, left, right, axes, options) {
     this.resizeTimer = null;
     this.hasInit = false;
 
+    /** @todo dude no */
+    this.lStriper = new Striper([187, 226, 181], [9, 108, 46], this.element.select('#pattern-left'));
+    this.rStriper = new Striper([190, 214, 229], [14, 82, 153], this.element.select('#pattern-right'));
+
 };
 
 
@@ -125,6 +129,10 @@ Scrollgraph.prototype.redraw = function() {
     this.right.redraw();
     this.axes.redraw();
     this.reposition().resizeAxes();
+    this.lStriper.stripe(this.axes.getLAxis().selectAll('.tick').size());
+    this.left.getArea().attr('fill', 'url(#'+this.lStriper.getId()+')');
+    this.rStriper.stripe(this.axes.getRAxis().selectAll('.tick').size());
+    this.right.getArea().attr('fill', 'url(#'+this.rStriper.getId()+')');
     return this;
 };
 
@@ -190,6 +198,12 @@ Scrollgraph.prototype.reposition = function() {
         .offsetLAxis(0, top)
         .offsetRAxis(maxWidth + this.options('middleMargin'), top)
     return this;
+};
+
+Scrollgraph.prototype.regradient = function() {
+    // how many ticks
+
+
 };
 
 /**

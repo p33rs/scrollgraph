@@ -53,6 +53,12 @@ Axes.prototype.redraw = function() {
 Axes.prototype.getHAxis = function() {
     return this.hAxisElement;
 };
+Axes.prototype.getRAxis = function() {
+    return this.rAxisElement;
+};
+Axes.prototype.getLAxis = function() {
+    return this.lAxisElement;
+};
 Axes.prototype.getVAxis = function() {
     return this.vAxisElement;
 }

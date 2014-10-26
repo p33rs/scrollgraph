@@ -22,6 +22,10 @@
     </svg>
 
     <svg class="scrollgraph">
+        <defs>
+            <pattern id="pattern-left" patternContentUnits="objectBoundingBox"></pattern>
+            <pattern id="pattern-right" patternContentUnits="objectBoundingBox"></pattern>
+        </defs>
         <g class="timescale" id="time" width="100"></g>
         <g class="graph" id="graph-left"></g>
         <g class="graph" id="graph-right"></g>
