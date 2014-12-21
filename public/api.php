@@ -4,6 +4,7 @@
 namespace Capacity\Scrollgraph;
 include('../vendor/autoload.php');
 
+// set true for testing purposes
 $linear = true;
 
 $response = new Response();

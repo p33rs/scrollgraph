@@ -120,7 +120,7 @@ Graph.prototype.setXRange = function(min, max) {
     if (typeof min !== 'number' || typeof max !== 'number') {
         throw new TypeError ('expected numeric min, max');
     }
-    if (min < 0 || max < 0 || max < min) {
+    if (min < 0 || max < 0) {
         throw new RangeError ('invalid min, max');
     }
     this.xScale.range([min, max]);
@@ -131,7 +131,7 @@ Graph.prototype.setYRange = function(min, max) {
     if (typeof min !== 'number' || typeof max !== 'number') {
         throw new TypeError ('expected numeric min, max');
     }
-    if (min < 0 || max < 0 || max < min) {
+    if (min < 0 || max < 0) {
         throw new RangeError ('invalid min, max');
     }
     this.yScale.range([min, max]);

@@ -178,8 +178,8 @@ Scrollgraph.prototype.updateXRanges = function() {
     var right = this.right.data.count();
     var max =  (right > left ? right : left) * this.options('dataDistance');
     this.element.attr('height', max);
-    this.left.setXRange(0, max);
-    this.right.setXRange(0, max);
+    this.left.setXRange(max, 0);
+    this.right.setXRange(max, 0);
     return this;
 };
 
