@@ -11,9 +11,11 @@ function Striper(a, b, pattern) {
     this.element = pattern.attr('height', 1);
     this.a = a;
     this.b = b;
+    Observable(this);
 };
 
 Striper.prototype.stripe = function(stripes) {
+    this.trigger('beforeStripe');
     var scale = d3.scale.linear()
         .domain([1,stripes]);
     var red, blue, green;
@@ -32,6 +34,7 @@ Striper.prototype.stripe = function(stripes) {
             .attr('width', 1)
             .attr('fill', 'rgb('+red+','+green+','+blue+')');
     }
+    this.trigger('afterStripe');
 };
 
 Striper.prototype.validArray = function(v) {

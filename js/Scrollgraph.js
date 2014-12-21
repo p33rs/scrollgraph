@@ -46,7 +46,9 @@ function Scrollgraph(element, left, right, axes, options) {
 
     /** @todo dude no */
     this.lStriper = new Striper([187, 226, 181], [9, 108, 46], this.element.select('#pattern-left'));
+    this.lStriper.on('afterStripe', this.stripeCallback.bind(this, this.left, this.lStriper))
     this.rStriper = new Striper([190, 214, 229], [14, 82, 153], this.element.select('#pattern-right'));
+    this.rStriper.on('afterStripe', this.stripeCallback.bind(this, this.right, this.rStriper))
 
 };
 
@@ -200,9 +202,14 @@ Scrollgraph.prototype.reposition = function() {
     return this;
 };
 
-Scrollgraph.prototype.regradient = function() {
-    // how many ticks
+Scrollgraph.prototype.stripeCallback = function(graph, stripe) {
 
+    // get the max size from the graph's range
+    var max = graph.yScale.range()[1];
+    // get the current size by scaling the graph's largest datapoint
+    var current = graph.yScale(graph.data.max);
+    var scale = (max / current).toString();
+    stripe.element.attr('patternTransform', 'scale(1, ' + scale + ')');
 
 };
 
