@@ -44,8 +44,11 @@ Axes.prototype.redraw = function() {
     var domain = this.xAxis.scale().domain();
     var span = domain[1].getTime() - domain[0].getTime();
     this.xAxis.ticks(span / 1800000)
-    this.yAxis(this.lAxisElement);
     this.yAxis(this.rAxisElement);
+    // flip the scale for the left-hand ticks
+    this.yScale.range(this.yScale.range().reverse());
+    this.yAxis(this.lAxisElement);
+    this.yScale.range(this.yScale.range().reverse());
     this.xAxis(this.vAxisElement);
     return this;
 };
