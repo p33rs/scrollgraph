@@ -102,7 +102,6 @@ Scrollgraph.prototype.fetch = function() {
         ? this.options('interval')
         : (window.innerHeight + this.options('scrollPad')) / this.options('dataDistance') * this.options('step');
 
-    console.log(this.left.getHeight(), window.innerHeight);
     this.left.fetch(this.options('step'), interval);
     this.right.fetch(this.options('step'), interval);
     /** @todo SPIN */

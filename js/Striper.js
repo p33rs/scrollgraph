@@ -23,7 +23,6 @@ Striper.prototype.stripe = function(stripes) {
     for (var i = 1; i <= stripes; i++) {
         scale.range([this.a[0], this.b[0]]);
         red = Math.floor(scale(i)).toString();
-        console.log(red);
         scale.range([this.a[1], this.b[1]]);
         green = Math.floor(scale(i)).toString();
         scale.range([this.a[2], this.b[2]]);

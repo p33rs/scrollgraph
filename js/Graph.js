@@ -49,12 +49,6 @@ Graph.prototype.redraw = function() {
             .select('.graph')
             .append('path').attr('class', 'path');
     }
-    console.log('x Domain:', this.xScale.domain());
-    console.log('x Range:', this.xScale.range());
-    console.log('y Domain:', this.yScale.domain());
-    console.log('y Range:', this.yScale.range());
-    console.log('-------------------------------');
-    // @TODO yaxis
     path.datum(this.data.getData()).attr('d', this.area);
     this.trigger('redraw', this);
 };

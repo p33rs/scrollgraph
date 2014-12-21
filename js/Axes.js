@@ -18,14 +18,16 @@ function Axes(hAxisElement, vAxisElement, xScale, yScale) {
         .scale(xScale)
         .orient('right')
         .outerTickSize(0)
-        .tickPadding(0);
+        .tickPadding(0)
+        .tickFormat(this.dateFormat.bind(this));
+
     this.yAxis = d3.svg.axis()
         .scale(yScale)
         .orient('top')
         .outerTickSize(2)
         .ticks(5)
         .tickPadding(0)
-        .tickFormat(this.byteFormat);
+        .tickFormat(this.byteFormat.bind(this));
 
 };
 
@@ -42,15 +44,16 @@ Axes.prototype.setWidth = function(left, right) {
 };
 
 Axes.prototype.redraw = function() {
-    var domain = this.xAxis.scale().domain();
-    var span = domain[1].getTime() - domain[0].getTime();
-    this.xAxis.ticks(span / 1800000)
+
+
     this.yAxis(this.rAxisElement);
     // flip the scale for the left-hand ticks
     this.yScale.range(this.yScale.range().reverse());
     this.yAxis(this.lAxisElement);
     this.yScale.range(this.yScale.range().reverse());
-    this.xAxis(this.vAxisElement);
+
+    this.renderXAxis(this.vAxisElement);
+    //this.xAxis(this.vAxisElement);
     return this;
 };
 
@@ -84,6 +87,46 @@ Axes.prototype.offset = function (axis, x, y) {
     return this;
 };
 
+Axes.prototype.renderXAxis = function(element) {
+    var xScale = this.xScale;
+    var domain = xScale.domain();
+    var span = domain[1].getTime() - domain[0].getTime();
+    var ticks = xScale.ticks(span / 1800000).reverse(); // backwards order, so the indexes match as we add data
+    if (ticks.length > 1) {
+        ticks.pop(); // skip the first tick.
+        var enter = element
+            .selectAll('g.tick')
+                .data(ticks)
+            .enter()
+            .insert('g')
+                .attr('class', 'tick')
+                .attr('transform', function(d) { return 'translate(0,' + xScale(d) + ')' });
+        var days = this.days;
+        var months = this.months;
+        enter.each(function(d) {
+            var e = d3.select(this);
+            e.selectAll('*').remove();
+            if (!d.getHours() && !d.getMinutes()) {
+                // Lie and display previous day at 11:59
+                d.setDate(d.getDate() - 1);
+                e.append('text').text(days[d.getDay()]);
+                e.append('text').text(
+                    months[d.getMonth()] + ' '
+                    + d.getDate().toString() + ', ' + d.getFullYear().toString()
+                );
+                e.append('text').text('11:59 PM');
+            } else {
+                var hours = d.getHours() % 12;
+                e.append('text').text(
+                    (hours ? hours : 12).toString() + ':'
+                    + (d.getMinutes() < 10 ? '0' : '').toString() + d.getMinutes().toString()
+                    + ' ' + (d.getHours() >= 12 ? 'PM' : 'AM')
+                );
+            }
+        });
+    }
+};
+
 Axes.prototype.byteFormat = function(data) {
     var measures = ['B', 'kB', 'MB', 'GB', 'TB'];
     for (var i = 0; i < measures.length; i++) {
@@ -95,3 +138,47 @@ Axes.prototype.byteFormat = function(data) {
     }
     return data.toString() + measures[i] + 'ps';
 };
+
+Axes.prototype.dateFormat = function(data) {
+    if (!data.getHours() && !data.getMinutes()) {
+        return (
+            '<span>' + this.days[data.getDay()] + '</span>'
+            + '<span>'
+            + this.months[data.getMonth()] + ' '
+            + data.getDate() + ', ' + data.getYear()
+            + '</span>'
+            + '<span>11:59 PM</span>'
+        );
+    } else {
+        return (
+            (data.getHours() % 12).toString() + ':'
+            + (data.getMinutes() < 10 ? '0' : '').toString() + data.getMinutes().toString()
+            + ' ' + (data.getHours() >= 12 ? 'PM' : 'AM')
+        );
+    }
+};
+
+Axes.prototype.months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+];
+
+Axes.prototype.days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+];
