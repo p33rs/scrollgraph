@@ -1,7 +1,11 @@
 <?php
+
 // it's an API LOL
 namespace Capacity\Scrollgraph;
 include('../vendor/autoload.php');
+
+$linear = true;
+
 $response = new Response();
 try {
     if (!array_key_exists('start', $_GET)) {
@@ -17,7 +21,9 @@ try {
     $end = (int) $_GET['end'];
     $step = (int) $_GET['step']; // 30m
 
-    if ($_GET['weak']) {
+    if ($linear) {
+        $bandwidth = new Linear($start, $end, $step);
+    } elseif ($_GET['weak']) {
         $bandwidth = new Bandwidth(0, 2400, 2000, 386, .05);
     } else {
         $bandwidth = new Bandwidth(0, 12000, 8000, 1024, .05);

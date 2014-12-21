@@ -7,7 +7,7 @@ use \RangeException;
  * The bandwidth information is fake.
  * Numbers represent bytes.
  */
-class Bandwidth {
+class Bandwidth implements DatasetInterface {
 
     private $min;
     private $max;
