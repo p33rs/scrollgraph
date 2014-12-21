@@ -149,6 +149,9 @@ Axes.prototype.renderXAxis = function(element) {
 };
 
 Axes.prototype.byteFormat = function(data) {
+    if (!data) {
+        return '';
+    }
     var measures = ['B', 'kB', 'MB', 'GB', 'TB'];
     for (var i = 0; i < measures.length; i++) {
         if (data > 1000) {

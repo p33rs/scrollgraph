@@ -45,10 +45,18 @@ function Scrollgraph(element, left, right, axes, options) {
     this.hasInit = false;
 
     /** @todo dude no */
-    this.lStriper = new Striper([187, 226, 181], [9, 108, 46], this.element.select('#pattern-left'));
-    this.lStriper.on('afterStripe', this.stripeCallback.bind(this, this.left, this.lStriper))
-    this.rStriper = new Striper([190, 214, 229], [14, 82, 153], this.element.select('#pattern-right'));
-    this.rStriper.on('afterStripe', this.stripeCallback.bind(this, this.right, this.rStriper))
+    this.lStriper = new Striper(
+        [187, 226, 181],
+        [9, 108, 46],
+        this.element.select('#pattern-left'),
+        this.left
+    );
+    this.rStriper = new Striper(
+        [190, 214, 229],
+        [14, 82, 153],
+        this.element.select('#pattern-right'),
+        this.right
+    );
 
 };
 
@@ -130,9 +138,9 @@ Scrollgraph.prototype.redraw = function() {
     this.right.redraw();
     this.axes.redraw();
     this.reposition().resizeAxes();
-    this.lStriper.stripe(this.axes.getLAxis().selectAll('.tick').size());
+    this.lStriper.stripe(this.axes.getLAxis().selectAll('.tick').size() + 1);
     this.left.getArea().attr('fill', 'url(#'+this.lStriper.getId()+')');
-    this.rStriper.stripe(this.axes.getRAxis().selectAll('.tick').size());
+    this.rStriper.stripe(this.axes.getRAxis().selectAll('.tick').size() + 1);
     this.right.getArea().attr('fill', 'url(#'+this.rStriper.getId()+')');
     return this;
 };
@@ -201,17 +209,6 @@ Scrollgraph.prototype.reposition = function() {
         .offsetLAxis(0, top)
         .offsetRAxis(maxWidth + this.options('middleMargin'), top)
     return this;
-};
-
-Scrollgraph.prototype.stripeCallback = function(graph, stripe) {
-
-    // get the max size from the graph's range
-    var max = graph.yScale.range()[1];
-    // get the current size by scaling the graph's largest datapoint
-    var current = graph.yScale(graph.data.max);
-    var scale = (max / current).toString();
-    stripe.element.attr('patternTransform', 'scale(1, ' + scale + ')');
-
 };
 
 /**

@@ -1,4 +1,4 @@
-function Striper(a, b, pattern) {
+function Striper(a, b, pattern, graph) {
     if (!pattern || !(pattern instanceof d3.selection)) {
         throw new TypeError('expected pattern');
     }
@@ -8,14 +8,16 @@ function Striper(a, b, pattern) {
     if (!b || !this.validArray(b)) {
         throw new TypeError('expected array');
     }
+    if (!graph || !(graph instanceof Graph)) {
+        throw new TypeError('expected  graph');
+    }
     this.element = pattern.attr('height', 1);
     this.a = a;
     this.b = b;
-    Observable(this);
+    this.graph = graph;
 };
 
 Striper.prototype.stripe = function(stripes) {
-    this.trigger('beforeStripe');
     var scale = d3.scale.linear()
         .domain([1,stripes]);
     var red, blue, green;
@@ -33,7 +35,15 @@ Striper.prototype.stripe = function(stripes) {
             .attr('width', 1)
             .attr('fill', 'rgb('+red+','+green+','+blue+')');
     }
-    this.trigger('afterStripe');
+    // get the max size from the graph's range
+    var ticks = this.graph.yScale.ticks(5);
+    var diff = ticks[1] - ticks[0];
+    var max = this.graph.yScale(diff * (ticks.length + 1));
+    //var max = this.graph.yScale.range()[1];
+    // get the current size by scaling the graph's largest datapoint
+    var current = this.graph.yScale(this.graph.data.max);
+    var scale = (max / current).toString();
+    this.element.attr('patternTransform', 'scale(1, ' + scale + ')');
 };
 
 Striper.prototype.validArray = function(v) {

@@ -58,7 +58,6 @@ Graph.prototype.redraw = function() {
  * @todo Don't do this with _isDomained. Wrap the scales in something.
  */
 Graph.prototype.setDomains = function() {
-    var min = this.data.min ? this.data.min : 0;
     var max = this.data.max ? this.data.max : 0;
 
     var start = this.data.start ? this.data.start : 0;
@@ -66,9 +65,6 @@ Graph.prototype.setDomains = function() {
 
     if (this.yScale._isDomained) {
         var currentY = this.yScale.domain();
-        if (currentY[0] < min) {
-            min = currentY[0];
-        }
         if (currentY[1] > max) {
             max = currentY[1];
         }
@@ -86,7 +82,7 @@ Graph.prototype.setDomains = function() {
     }
     this.xScale._isDomained = true;
 
-    this.yScale.domain([min, max]);
+    this.yScale.domain([0, max]);
     this.xScale.domain([start, end]);
 
     return this;
