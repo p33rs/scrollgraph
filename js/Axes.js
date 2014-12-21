@@ -24,7 +24,8 @@ function Axes(hAxisElement, vAxisElement, xScale, yScale) {
         .orient('top')
         .outerTickSize(2)
         .ticks(5)
-        .tickPadding(0);
+        .tickPadding(0)
+        .tickFormat(this.byteFormat);
 
 };
 
@@ -81,4 +82,16 @@ Axes.prototype.offsetRAxis = function(x, y) {
 Axes.prototype.offset = function (axis, x, y) {
     axis.attr('transform', 'translate('+ x.toString() + ',' + y.toString() + ')');
     return this;
+};
+
+Axes.prototype.byteFormat = function(data) {
+    var measures = ['B', 'kB', 'MB', 'GB', 'TB'];
+    for (var i = 0; i < measures.length; i++) {
+        if (data > 1000) {
+            data /= 1000;
+        } else {
+            break;
+        }
+    }
+    return data.toString() + measures[i] + 'ps';
 };
