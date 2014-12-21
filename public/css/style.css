@@ -1,5 +1,6 @@
 body, html {
     font-family: Lato, sans-serif;
+    font-size: 14px;
     font-weight: 300;
     color: #000000;
     background-color: #ffffff;
@@ -11,16 +12,10 @@ html {
     overflow-y: scroll
 }
 
-.datascales {
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #ffffff;
-}
 .logo {
     position: fixed;
-    width: 100px;
-    top: 40px;
+    width: 140px;
+    top: 19px;
     left: 50%;
 }
 .logo-border {
@@ -28,8 +23,8 @@ html {
     font-weight: 900;
     text-decoration: none;
     display: inline-block;
-    height: 60px; /* 84px diagonal, fyi */
-    width: 60px;
+    height: 82px;
+    width: 82px;
     transform: rotate(45deg);
     transform-origin: 0 0;
     background-color: #ffffff;
@@ -39,10 +34,29 @@ html {
 }
 .logo-c {
     transform: rotate(-45deg);
-    font-size: 50px;
-    height: 50px;
-    width: 50px;
+    font-size: 70px;
+    height: 70px;
+    width: 70px;
     text-align: center;
+}
+
+.datascales {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+}
+
+.timescale .tick text {
+    text-anchor: middle;
+}
+
+.timescale .tick .tick-day {
+    font-weight: 700;
+}
+.timescale .tick .tick-date {
+}
+.timescale .tick .tick-time {
 }
 
 .scrollgraph {

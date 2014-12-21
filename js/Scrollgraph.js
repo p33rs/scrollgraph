@@ -59,7 +59,7 @@ Scrollgraph.prototype.defaultOptions = {
     step: 300, // passed as API argument. how much time per datapoint?
     interval: 21600, // total timespan to retrieve with each scroll-load
     waiting: $('<div />').addClass('waiting').text('loading ...'),
-    middleMargin: 100,
+    middleMargin: 140,
     topMargin: 80
 };
 
@@ -163,6 +163,8 @@ Scrollgraph.prototype.resizeAxes = function() {
     this.axes.getHAxis()
         .attr('height', this.options('topMargin'))
         .attr('width', this.windowWidth());
+    this.axes.getVAxis()
+        .attr('width', this.options('middleMargin'));
     return this;
 };
 

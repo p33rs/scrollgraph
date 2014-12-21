@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="description" content="[c]" />
 
-    <link href="http://fonts.googleapis.com/css?family=Lato:100,300,700,900" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,700,900" rel="stylesheet" type="text/css">
     <link href="css/style.css" rel="stylesheet" type="text/css">
 
     <script src="js/vendor.js" type="text/javascript"></script>
@@ -26,7 +26,7 @@
             <pattern id="pattern-left" patternContentUnits="objectBoundingBox"></pattern>
             <pattern id="pattern-right" patternContentUnits="objectBoundingBox"></pattern>
         </defs>
-        <g class="timescale" id="time" width="100"></g>
+        <g class="timescale" id="time" width="140"></g>
         <g class="graph" id="graph-left"></g>
         <g class="graph" id="graph-right"></g>
     </svg>

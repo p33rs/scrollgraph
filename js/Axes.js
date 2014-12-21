@@ -1,3 +1,11 @@
+/**
+ * @param {d3} hAxisElement
+ * @param {d3} vAxisElement
+ * @param {d3.scale} xScale
+ * @param {d3.scale} vScale
+ * @constructor
+ * @todo the vaxis width should be set here, not in markup
+ */
 function Axes(hAxisElement, vAxisElement, xScale, yScale) {
 
     if (!hAxisElement || !(hAxisElement instanceof d3.selection)) {
@@ -13,13 +21,7 @@ function Axes(hAxisElement, vAxisElement, xScale, yScale) {
     this.vAxisElement = vAxisElement;
     this.xScale = xScale;
     this.yScale = yScale;
-
-    this.xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient('right')
-        .outerTickSize(0)
-        .tickPadding(0)
-        .tickFormat(this.dateFormat.bind(this));
+    this.padding = 4;
 
     this.yAxis = d3.svg.axis()
         .scale(yScale)
@@ -45,7 +47,6 @@ Axes.prototype.setWidth = function(left, right) {
 
 Axes.prototype.redraw = function() {
 
-
     this.yAxis(this.rAxisElement);
     // flip the scale for the left-hand ticks
     this.yScale.range(this.yScale.range().reverse());
@@ -53,7 +54,7 @@ Axes.prototype.redraw = function() {
     this.yScale.range(this.yScale.range().reverse());
 
     this.renderXAxis(this.vAxisElement);
-    //this.xAxis(this.vAxisElement);
+
     return this;
 };
 
@@ -91,38 +92,58 @@ Axes.prototype.renderXAxis = function(element) {
     var xScale = this.xScale;
     var domain = xScale.domain();
     var span = domain[1].getTime() - domain[0].getTime();
-    var ticks = xScale.ticks(span / 1800000).reverse(); // backwards order, so the indexes match as we add data
+    var ticks = xScale.ticks(span / 3600000).reverse(); // backwards order, so the indexes match as we add data
     if (ticks.length > 1) {
-        ticks.pop(); // skip the first tick.
+        ticks.shift(); // skip the first tick.
         var enter = element
             .selectAll('g.tick')
                 .data(ticks)
             .enter()
             .insert('g')
-                .attr('class', 'tick')
-                .attr('transform', function(d) { return 'translate(0,' + xScale(d) + ')' });
+                .attr('class', 'tick');
         var days = this.days;
         var months = this.months;
+        var vAxis = this.vAxisElement;
+        var padding = this.padding;
         enter.each(function(d) {
             var e = d3.select(this);
-            e.selectAll('*').remove();
+            // on each new day, we get a three-liner
             if (!d.getHours() && !d.getMinutes()) {
                 // Lie and display previous day at 11:59
-                d.setDate(d.getDate() - 1);
-                e.append('text').text(days[d.getDay()]);
-                e.append('text').text(
-                    months[d.getMonth()] + ' '
-                    + d.getDate().toString() + ', ' + d.getFullYear().toString()
-                );
-                e.append('text').text('11:59 PM');
+                var lie = new Date(d.getTime());
+                lie.setDate(lie.getDate() - 1);
+                var aHeight = e.append('text')
+                    .text(days[lie.getDay()])
+                    .attr('class', 'tick-day')
+                    .node().getBBox().height;
+                var bHeight = e.append('text')
+                    .text(
+                        months[lie.getMonth()] + ' '
+                        + lie.getDate().toString() + ', ' + lie.getFullYear().toString()
+                    )
+                    .attr('y', aHeight + padding)
+                    .attr('class', 'tick-date')
+                    .node().getBBox().height;
+                e.append('text')
+                    .text('11:59 PM')
+                    .attr('y', aHeight + bHeight + 2 * padding);
             } else {
                 var hours = d.getHours() % 12;
-                e.append('text').text(
-                    (hours ? hours : 12).toString() + ':'
-                    + (d.getMinutes() < 10 ? '0' : '').toString() + d.getMinutes().toString()
-                    + ' ' + (d.getHours() >= 12 ? 'PM' : 'AM')
-                );
+                e.append('text')
+                    .text(
+                        (hours ? hours : 12).toString() + ':'
+                        + (d.getMinutes() < 10 ? '0' : '').toString() + d.getMinutes().toString()
+                        + ' ' + (d.getHours() >= 12 ? 'PM' : 'AM')
+                    )
+                    .attr('class', 'tick-time');
             }
+            // valign and offset the text
+            e.attr('transform', function(d) {
+                var y = (-1 * e.node().getBBox().height / 2) + xScale(d);
+                return 'translate(0, '+ y.toString() +')'
+            });
+            // hcenter text
+            e.selectAll('text').attr('x', vAxis.attr('width') / 2);
         });
     }
 };
@@ -139,38 +160,19 @@ Axes.prototype.byteFormat = function(data) {
     return data.toString() + measures[i] + 'ps';
 };
 
-Axes.prototype.dateFormat = function(data) {
-    if (!data.getHours() && !data.getMinutes()) {
-        return (
-            '<span>' + this.days[data.getDay()] + '</span>'
-            + '<span>'
-            + this.months[data.getMonth()] + ' '
-            + data.getDate() + ', ' + data.getYear()
-            + '</span>'
-            + '<span>11:59 PM</span>'
-        );
-    } else {
-        return (
-            (data.getHours() % 12).toString() + ':'
-            + (data.getMinutes() < 10 ? '0' : '').toString() + data.getMinutes().toString()
-            + ' ' + (data.getHours() >= 12 ? 'PM' : 'AM')
-        );
-    }
-};
-
 Axes.prototype.months = [
-    'January',
-    'February',
+    'Jan.',
+    'Feb.',
     'March',
     'April',
     'May',
     'June',
     'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
+    'Aug.',
+    'Sept.',
+    'Oct.',
+    'Nov.',
+    'Dec.'
 ];
 
 Axes.prototype.days = [
